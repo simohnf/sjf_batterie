@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="ybflCD" name="sjf_batterie" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" displaySplashScreen="1"
+              pluginManufacturer="sjf">
   <MAINGROUP id="D9Ys3U" name="sjf_batterie">
     <GROUP id="{4BD9BAAF-DEA6-A6F9-D4AA-AB38D52099C4}" name="Source">
       <FILE id="qo7Mz6" name="PluginProcessor.cpp" compile="1" resource="0"

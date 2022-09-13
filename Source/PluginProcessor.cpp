@@ -23,6 +23,12 @@ Sjf_batterieAudioProcessor::Sjf_batterieAudioProcessor()
                        )
 #endif
 {
+    for (int v = 0; v < m_nVoices; v++)
+    {
+        sjf_sampler *sampleVoice = new sjf_sampler;
+        sampleVoice->initialise(getSampleRate());
+        samples.add(sampleVoice);
+    }
 }
 
 Sjf_batterieAudioProcessor::~Sjf_batterieAudioProcessor()
@@ -94,8 +100,12 @@ void Sjf_batterieAudioProcessor::changeProgramName (int index, const juce::Strin
 //==============================================================================
 void Sjf_batterieAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    for (int v = 0; v < m_nVoices; v++)
+    {
+        samples[v]->initialise(getSampleRate());
+        
+    }
+    tempBuffer.setSize(getTotalNumOutputChannels(), samplesPerBlock);
 }
 
 void Sjf_batterieAudioProcessor::releaseResources()
@@ -136,8 +146,18 @@ void Sjf_batterieAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
+    auto buffSize = buffer.getNumSamples();
     buffer.clear();
-    
+
+    for (int v = 0; v < m_nVoices; v++)
+    {
+        tempBuffer.clear();
+        samples[v]->play(tempBuffer);
+        for (int c = 0; c < totalNumOutputChannels; c++)
+        {
+            buffer.addFrom(c, 0, tempBuffer, c, 0, buffSize);
+        }
+    }
 }
 
 //==============================================================================

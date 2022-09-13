@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-
+#include "/Users/simonfay/Programming_Stuff/sjf_audio/sjf_sampler.h"
 //==============================================================================
 /**
 */
@@ -56,7 +56,14 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    int getNumVoices() { return m_nVoices; }
+    int getNumSteps() { return m_nSteps; }
+    
+    void loadSample (int voiceNumber ){ samples[voiceNumber]->loadSample(); }
 private:
+    int m_nVoices = 10, m_nSteps = 32;
+    juce::OwnedArray<sjf_sampler> samples;
+    juce::AudioBuffer<float> tempBuffer;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sjf_batterieAudioProcessor)
 };

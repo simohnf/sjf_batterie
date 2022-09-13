@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "/Users/simonfay/Programming_Stuff//sjf_audio/sjf_widgets.h"
-#include "/Users/simonfay/Programming_Stuff/sjf_audio/sjf_LookAndFeel.h"
+#include "/Users/simonfay/Programming_Stuff/sjf_audio/sjf_lookAndFeel.h"
 //==============================================================================
 /**
 */
@@ -34,7 +34,7 @@ private:
     sjf_lookAndFeel landf;
     juce::ComboBox divisionBox, divisionTypeBox;
     
-    juce::Array<juce::TextButton*> loadbuttons;
+    juce::OwnedArray< juce::TextButton > loadbuttons;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Sjf_batterieAudioProcessorEditor)
