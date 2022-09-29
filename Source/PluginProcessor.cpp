@@ -8,7 +8,6 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "/Users/simonfay/Programming_Stuff/sjf_audio/sjf_sampler.h" 
 
 //==============================================================================
 Sjf_batterieAudioProcessor::Sjf_batterieAudioProcessor()
@@ -22,14 +21,7 @@ Sjf_batterieAudioProcessor::Sjf_batterieAudioProcessor()
                      #endif
                        )
 #endif
-{
-    for (int v = 0; v < m_nVoices; v++)
-    {
-        sjf_sampler *sampleVoice = new sjf_sampler;
-        sampleVoice->initialise(getSampleRate());
-        samples.add(sampleVoice);
-    }
-}
+{ }
 
 Sjf_batterieAudioProcessor::~Sjf_batterieAudioProcessor()
 {
@@ -100,12 +92,7 @@ void Sjf_batterieAudioProcessor::changeProgramName (int index, const juce::Strin
 //==============================================================================
 void Sjf_batterieAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    for (int v = 0; v < m_nVoices; v++)
-    {
-        samples[v]->initialise(getSampleRate());
-        
-    }
-    tempBuffer.setSize(getTotalNumOutputChannels(), samplesPerBlock);
+    drummer.initialise(sampleRate, getTotalNumOutputChannels(), samplesPerBlock);
 }
 
 void Sjf_batterieAudioProcessor::releaseResources()
@@ -143,21 +130,25 @@ bool Sjf_batterieAudioProcessor::isBusesLayoutSupported (const BusesLayout& layo
 void Sjf_batterieAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    auto buffSize = buffer.getNumSamples();
     buffer.clear();
 
-    for (int v = 0; v < m_nVoices; v++)
+    if (!drummer.isOn()){ return;  }
+    playHead = this->getPlayHead();
+    if (playHead != nullptr)
     {
-        tempBuffer.clear();
-        samples[v]->play(tempBuffer);
-        for (int c = 0; c < totalNumOutputChannels; c++)
+        positionInfo = *playHead->getPosition();
+        if( positionInfo.getBpm() )
         {
-            buffer.addFrom(c, 0, tempBuffer, c, 0, buffSize);
+            if ( positionInfo.getIsPlaying())
+            {
+                auto pos = *positionInfo.getPpqPosition( );
+                drummer.runMachine(buffer, totalNumOutputChannels, pos);
+            }
         }
     }
+
 }
 
 //==============================================================================
